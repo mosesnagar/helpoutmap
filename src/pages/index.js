@@ -1,63 +1,64 @@
-import Head from 'next/head';
+import { useState, useEffect } from "react";
+import Head from "next/head";
 
-import Layout from '@components/Layout';
-import Section from '@components/Section';
-import Container from '@components/Container';
-import Map from '@components/Map';
-import Button from '@components/Button';
+import Layout from "@components/Layout";
+import Section from "@components/Section";
+import Container from "@components/Container";
+import Map from "@components/Map";
 
-import styles from '@styles/Home.module.scss';
-import { mockData } from 'src/mock';
+import styles from "@styles/Home.module.scss";
+import { mockData } from "src/mock";
+import FilterList from "@components/FilterList";
 
-const DEFAULT_CENTER = [32.109333, 34.855499]
+const DEFAULT_CENTER = [32.109333, 34.855499];
 
 export default function Home() {
-  return (
-    <Layout>
-      <Head>
-        <title>Next.js Leaflet Starter</title>
-        <meta name="description" content="Create mapping apps with Next.js Leaflet Starter" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    const [data, setData] = useState(mockData);
+    const [filterTags, setFilterTags] = useState([]);
 
-      <Section>
-        <Container>
-          <h1 className={styles.title}>
-            Next.js Leaflet Starter
-          </h1>
+    useEffect(() => {
+        const filterOptions = [...new Set(...mockData.map((data) => [...data.tags]))];
+        setFilterTags(filterOptions);
+    }, []);
 
-          <Map className={styles.homeMap} width="800" height="800" center={DEFAULT_CENTER} zoom={12}>
-            {({ TileLayer, Marker, Popup }) => (
-              <>
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                />
-                {mockData.map((data, index) => (
-                  <Marker key={index} position={[data.location.lat, data.location.lng]}>
-                    <Popup>
-                      {data.name}
-                    </Popup>
-                  </Marker>
-                ))}
-                <Marker position={DEFAULT_CENTER}>
-                  <Popup>
-                    A pretty CSS3 popup. <br /> Easily customizable.
-                  </Popup>
-                </Marker>
-              </>
-            )}
-          </Map>
+    return (
+        <Layout>
+            <Head>
+                <title>Next.js Leaflet Starter</title>
+                <meta name="description" content="Create mapping apps with Next.js Leaflet Starter" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
 
-          <p className={styles.description}>
-            <code className={styles.code}>npx create-next-app -e https://github.com/colbyfayock/next-leaflet-starter</code>
-          </p>
+            <Section>
+                <Container>
+                    <h1 className={styles.title}>Next.js Leaflet Starter</h1>
 
-          <p className={styles.view}>
-            <Button href="https://github.com/colbyfayock/next-leaflet-starter">Vew on GitHub</Button>
-          </p>
-        </Container>
-      </Section>
-    </Layout>
-  )
+                    <div className={styles.mapCt}>
+                        <Map className={styles.homeMap} width="800" height="800" center={DEFAULT_CENTER} zoom={12}>
+                            {({ TileLayer, Marker, Popup }) => (
+                                <>
+                                    <TileLayer
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                    />
+                                    {data.map((data, index) => (
+                                        <Marker key={index} position={[data.location.lat, data.location.lng]}>
+                                            <Popup>{data.name}</Popup>
+                                        </Marker>
+                                    ))}
+                                    <Marker position={DEFAULT_CENTER}>
+                                        <Popup>
+                                            A pretty CSS3 popup. <br /> Easily customizable.
+                                        </Popup>
+                                    </Marker>
+                                </>
+                            )}
+                        </Map>
+
+                        <FilterList filterOptions={filterTags} />
+                    </div>
+                </Container>
+            </Section>
+        </Layout>
+    );
 }
