@@ -17,7 +17,7 @@ export default function Home() {
     const [filterTags, setFilterTags] = useState([]);
 
     useEffect(() => {
-        const filterOptions = [...new Set(...mockData.map((data) => [...data.tags]))];
+        const filterOptions = [...new Set(mockData.flatMap((data) => [...data.tags]))];
         setFilterTags(filterOptions);
     }, []);
 

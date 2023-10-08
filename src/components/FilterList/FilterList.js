@@ -1,40 +1,32 @@
 import Filter from "@components/Filter";
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { createUrl } from "../../utils";
 
-// FilterList component
 const FilterList = ({ filterOptions }) => {
     const router = useRouter();
-
-    const [filterState, setFilterState] = useState({});
-
-    const handleCheckboxChange = (paramName) => {
-        const queryParams = { ...router.query };
-        queryParams[paramName] = queryParams[paramName] === "1" ? "0" : "1";
-        router.push({ pathname: router.pathname, query: queryParams });
-    };
-
-    useEffect(() => {
-        // Initialize filter state from URL query parameters
-        const initialFilterState = {};
-        filterOptions?.forEach((option) => {
-            initialFilterState[option] = router.query[option] === "1";
-        });
-        setFilterState(initialFilterState);
-    }, [filterOptions, router.query]);
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     return (
         <div>
             <h2>Filters</h2>
-            {filterOptions?.map((option) => (
-                <Filter
-                    key={option}
-                    label={option}
-                    paramName={option}
-                    isChecked={filterState[option]}
-                    onCheckboxChange={() => handleCheckboxChange(option)}
-                />
-            ))}
+            {filterOptions?.map((option) => {
+                const optionNameLowerCase = option.toLowerCase();
+                const optionSearchParams = new URLSearchParams(searchParams.toString());
+                optionSearchParams.set(optionNameLowerCase, option);
+                const optionUrl = createUrl(pathname, optionSearchParams);
+                const isActive = searchParams.get(optionNameLowerCase) === option;
+
+                return (
+                    <Filter
+                        key={option}
+                        label={option}
+                        paramName={option}
+                        isChecked={isActive}
+                        onCheckboxChange={() => router.replace(optionUrl, { scroll: false })}
+                    />
+                );
+            })}
         </div>
     );
 };
