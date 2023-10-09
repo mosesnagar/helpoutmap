@@ -24,6 +24,12 @@
     font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
+.mapCt {
+    display: grid;
+    grid-template-columns: 15fr 1fr;
+    gap: 1em;
+}
+
 .homeMap {
     display: flex;
     width: 100%;
@@ -31,10 +37,10 @@
     position: relative;
 }
 
-.mapCt {
-    display: grid;
-    // place next to each other
-    grid-template-columns: 15fr 1fr;
-    gap: 1em;
-
+.filterList {
+    direction: rtl;
+    text-align: right;
+    font-size: 1.35rem;
+    text-wrap: nowrap;
+    min-width: 150px;
 }
