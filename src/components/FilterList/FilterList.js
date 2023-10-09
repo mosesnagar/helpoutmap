@@ -1,21 +1,33 @@
 import Filter from "@components/Filter";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { createUrl } from "../../utils";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-const FilterList = ({ filterOptions }) => {
+const FilterList = ({ filterOptions, ...props }) => {
     const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [activeFilters, setActiveFilters] = useState([]);
+
+    useEffect(() => {
+        const optionSearchParams = new URLSearchParams(searchParams.toString());
+        const tags = optionSearchParams.get("tags")?.split(",");
+        setActiveFilters(tags);
+    }, [searchParams]);
+
+    const handleCheckboxChange = (option, isActive) => {
+        let url;
+        url = isActive
+            ? `/?tags=${(activeFilters ?? []).filter((filter) => filter !== option).join(",")}`
+            : `/?tags=${(activeFilters ?? []).join(",")},${option}`;
+
+        router.push(url, undefined, { shallow: true });
+    };
 
     return (
-        <div>
-            <h2>Filters</h2>
+        <div {...props}>
+            <h2>סינון</h2>
             {filterOptions?.map((option) => {
-                const optionNameLowerCase = option.toLowerCase();
-                const optionSearchParams = new URLSearchParams(searchParams.toString());
-                optionSearchParams.set(optionNameLowerCase, option);
-                const optionUrl = createUrl(pathname, optionSearchParams);
-                const isActive = searchParams.get(optionNameLowerCase) === option;
+                const isActive = activeFilters?.includes(option);
 
                 return (
                     <Filter
@@ -23,7 +35,7 @@ const FilterList = ({ filterOptions }) => {
                         label={option}
                         paramName={option}
                         isChecked={isActive}
-                        onCheckboxChange={() => router.replace(optionUrl, { scroll: false })}
+                        onCheckboxChange={() => handleCheckboxChange(option, isActive)}
                     />
                 );
             })}
