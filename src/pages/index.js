@@ -9,15 +9,16 @@ import Map from "@components/Map";
 import styles from "@styles/Home.module.scss";
 import { mockData } from "src/mock";
 import FilterList from "@components/FilterList";
+import { getTasksList } from "../../libs/sheets";
 
 const DEFAULT_CENTER = [32.109333, 34.855499];
 
-export default function Home() {
-    const [data, setData] = useState(mockData);
+export default function Home({tasks}) {
+    const [data, setData] = useState(tasks);
     const [filterTags, setFilterTags] = useState([]);
 
     useEffect(() => {
-        const filterOptions = [...new Set(mockData.flatMap((data) => [...data.tags]))];
+        const filterOptions = [...new Set(data.flatMap((data) => [...data.tags]))];
         setFilterTags(filterOptions);
     }, []);
 
@@ -41,16 +42,16 @@ export default function Home() {
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                                     />
-                                    {data.map((data, index) => (
+                                    {data?.map((data, index) => (
                                         <Marker key={index} position={[data.location.lat, data.location.lng]}>
-                                            <Popup>{data.name}</Popup>
+                                            <Popup>{data.title}</Popup>
                                         </Marker>
                                     ))}
-                                    <Marker position={DEFAULT_CENTER}>
+                                    {/* <Marker position={DEFAULT_CENTER}>
                                         <Popup>
                                             A pretty CSS3 popup. <br /> Easily customizable.
                                         </Popup>
-                                    </Marker>
+                                    </Marker> */}
                                 </>
                             )}
                         </Map>
@@ -62,3 +63,20 @@ export default function Home() {
         </Layout>
     );
 }
+
+export async function getServerSideProps(context) {
+    const tasksList = await getTasksList();
+    const tasks = tasksList.slice(1, tasksList.length);
+    tasks.forEach(task => {
+        const arr= task.location.split(',');
+        task.location = {lat: arr[0], lng: arr[1]};
+
+        const tags = task.tags.split(',');
+        task.tags = tags;
+    });
+    return {
+      props: {
+        tasks
+      },
+    };
+  }
