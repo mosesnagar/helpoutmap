@@ -12,18 +12,20 @@ export async function getTasksList() {
     const sheets = google.sheets({ version: 'v4', auth: jwt });
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SPREADSHEET_ID,
-      range: 'helpout', // sheet name
+      range: 'helpout2', // sheet name
     });
 
     const rows = response.data.values;
     if (rows.length) {
       return rows.map((row) => ({
         title: row[1],
-        location: row[2],
-        description: row[3],
+        description: row[2],
+        contactName: row[3],
         contact: row[4],
-        link: row[5],
-        tags: row[6],
+        location: row[5],
+        zipCode: row[6],
+        link: row[7],
+        tags: row[8],
       }));
     }
   } catch (err) {

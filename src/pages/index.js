@@ -76,8 +76,8 @@ export default function Home({ tasks }) {
 }
 
 export async function getServerSideProps(context) {
-    console.log("gdfgdfg")
     const tasksList = await getTasksList();
+    console.log(tasksList);
     const tasks = tasksList.slice(1, tasksList.length);
     tasks.forEach((task) => {
         const arr = task.location.split(",");
