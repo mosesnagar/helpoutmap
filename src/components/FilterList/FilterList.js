@@ -25,20 +25,22 @@ const FilterList = ({ filterOptions, ...props }) => {
 
     return (
         <div {...props}>
-            <h2>סינון</h2>
-            {filterOptions?.map((option) => {
-                const isActive = activeFilters?.includes(option);
+            <div>
+                <h2>סינון</h2>
+                {filterOptions?.map((option) => {
+                    const isActive = activeFilters?.includes(option);
 
-                return (
-                    <Filter
-                        key={option}
-                        label={option}
-                        paramName={option}
-                        isChecked={isActive}
-                        onCheckboxChange={() => handleCheckboxChange(option, isActive)}
-                    />
-                );
-            })}
+                    return (
+                        <Filter
+                            key={option}
+                            label={option}
+                            paramName={option}
+                            isChecked={isActive}
+                            onCheckboxChange={() => handleCheckboxChange(option, isActive)}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 };
